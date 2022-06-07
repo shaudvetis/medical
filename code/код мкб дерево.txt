@@ -1,0 +1,285 @@
+@extends('medical')
+
+@section('content')
+
+<style>
+.classgr1, .name_diagnoses, .classgr2, .classgr3{
+	font-size: 12px;
+	cursor: pointer;
+}
+.classgr2{
+	padding-left: 20px;
+	color: red;
+}
+.classgr3{
+	padding-left: 21px;
+	color: blue;
+}
+.classgr4{
+	padding-left: 10px;
+	color: green;
+}
+
+</style>
+
+<div class="row">
+<div class="col-8 card card-body" style=" height: 70vh;overflow-y: scroll;">
+  <div class="mt-2">
+	@foreach ($mkb as $value)
+      @if ($value->gr2=='' && $value->gr3=='' )
+		<div class="classgr1" data="{{$value->id}}"  id="{{$value->gr1}}"> <i class="bi bi-plus menu1"></i> 
+			<span>{{$value->name_diagnoses }}</span></div> 
+			<!-- Вставляем запрос джава -->
+			<div class="all_group1{{$value->id}} classgr2"></div>
+
+      @endif
+    
+    @endforeach
+
+  </div>
+</div>
+
+<div class="col-4 card card-body ml-2 " style=" height: 70vh;overflow-y: scroll;">
+  <div class="name_diagnoses mt-2">
+  </div>
+</div>
+
+  @php $en = array('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 
+	'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z');	 @endphp
+ <div class="row col-12  ml-2" style="background-color:#FFFAFA">
+  <div class="col-1">
+    <label for="posdiacode" class="form-label col-form-label-sm" style="font-size:9px">Код Диагноза</label>
+    <select class="form-control form-control-sm mkb1">
+        <option></option>
+        @foreach ($en as $ens)
+        <option>{{$ens}}</option>
+        @endforeach
+    </select>
+    </div>
+<div class="col-1">
+    <label for="posdiacode" class="form-label col-form-label-sm" style="font-size:9px">Шифр</label>
+    <input type="text" class="form-control form-control-sm mkb2">
+    </div>
+    <div class="col-1">
+    <label for="posdiacode" class="form-label col-form-label-sm" style="font-size:9px">Шифр</label>
+    <input type="text" class="form-control form-control-sm mkb3"> 
+    <button class="btn btn-sm mt-1 searchmkb" style="color:#8370DB;">Пошук</button>
+    </div>
+<div class="col-7">
+ <label for="posdiacode" class="form-label col-form-label-sm" style="font-size:9px">Назва діагнозу</label>
+ <input type="text" class="form-control form-control-sm mkb4" >
+ <button class="btn btn-sm mt-1" style="color:blue;">Запис діагноза</button>  <button  class="btn btn-sm mt-1 mkbdell" style="color:pink;">Видалити діагноз</button>
+</div>
+  
+</div>
+
+
+</div>
+
+@endsection
+
+@section('js')
+<script>
+ $(document).ready(function(){
+  
+  var icd_group =  <?php echo json_encode($mkb);?>;
+
+  var diagnoses =  <?php echo json_encode($mkb1);?>;
+
+ BaseRecord.icd_group=icd_group;
+ 
+ BaseRecord.diagnoses= diagnoses;
+ }); 
+
+ $(document).on('click', '.classgr1',function(e){
+    
+ BaseRecord.id=$(this).attr('data');
+ BaseRecord.classgr=$(this).attr('id');
+ BaseRecord.getmkb($(this).attr('id'));
+});  
+
+ $(document).on('click', '.gr2',function(e){
+
+ BaseRecord.id =$(this).attr('data');
+ BaseRecord.classgr=$(this).attr('id');
+ BaseRecord.getmkbgr2();
+
+});
+
+ $(document).on('click', '.gr3',function(e){
+
+ BaseRecord.id =$(this).attr('data');
+ BaseRecord.classgr=$(this).attr('id');
+ BaseRecord.getmkbgr3();
+
+});
+
+
+ $(document).on('click', '.searchmkb',function(e){
+
+ var g =$('.mkb1').val();
+ var g1 =$('.mkb2').val();
+ var g2 =$('.mkb3').val();
+
+ var mkbdiag= g+g1+'.'+g2;
+ 
+ var arr=BaseRecord.diagnoses;
+   var data_json2=(arr.filter(arr =>arr.code === mkbdiag));
+     str_json2="";
+    for(var i in data_json2) {
+       str_json2+=data_json2[i]['namedia'];     
+    }
+    if(str_json2 == ''){
+    	$(".mkb4").val('Діагноз  ненайдено');
+    }
+    else{
+    	$(".mkb4").val(str_json2);
+    }
+
+}); 
+
+ $(document).on('click', '.mkbdell',function(e){
+
+  $(".mkb4").val(' ');
+}); 
+
+  $('body').on('change', '.namdia',function(e){
+    var namdia = $("input[name='namdia']:checked").val();
+    $(".mkb4").val(namdia);
+}); 
+  $('body').on('change', '.namdia1',function(e){
+    var namdia = $("input[name='namdia1']:checked").val();
+    $(".mkb4").val(namdia);
+}); 
+    $('body').on('change', '.namdia2',function(e){
+    var namdia = $("input[name='namdia2']:checked").val();
+    $(".mkb4").val(namdia);
+}); 
+ //Запуск страницы заочное расписание у руководителя
+var BaseRecord={
+
+id:'id',
+icd_group: 'none',
+diagnoses: 'prezent',
+classgr:"class",
+
+getmkb: function(id){
+   var ajaxSetting={
+      success:function(response){
+
+var data_json=BaseRecord.diagnoses;
+
+
+
+
+//var data_json2=(arr2.filter(arr2 => arr2.gr1 === BaseRecord.classgr));
+    var str_json2="";
+     for(var i in  BaseRecord.icd_group) {
+       if(BaseRecord.icd_group[i]['gr1']===BaseRecord.classgr && BaseRecord.icd_group[i]['gr3']=='' && BaseRecord.icd_group[i]['gr2'] !=''){
+       str_json2+="<p id='"+BaseRecord.icd_group[i]['gr2']+"' class='gr2' data='"+BaseRecord.icd_group[i]['id']+"'>"+BaseRecord.icd_group[i]['name_diagnoses']+"</p>"+"<div class='all_group2"+BaseRecord.icd_group[i]['id']+" classgr3'></div>";     
+         }
+    }
+
+  var classgrtId = BaseRecord.id;
+
+$('.all_group1' + classgrtId).html(str_json2);
+  
+//var data_json=(arr.filter(arr => arr.gr1 === BaseRecord.classgr));
+  var str_json="";
+       for(var i in data_json) {
+       if(data_json[i]['gr1']===BaseRecord.classgr){
+       str_json+="<p id='"+data_json[i]['gr1']+"' value='"+data_json[i]['id']+"'>"+"<input type='radio' class='mt-2 namdia' name='namdia' value='"+data_json[i]['namedia']+"'>"+"<span class='ml-4'>"+data_json[i]['namedia']+data_json[i]['code']+" "+"</span>"+"</p>";     
+         }
+    }
+
+
+
+ $('.name_diagnoses').html(str_json);
+
+
+ 
+},
+  error: (error) => {
+    console.log(JSON.stringify(error));
+   },
+   };
+   $.ajax(ajaxSetting); 
+},
+getmkbgr2: function(){
+
+var ajaxSetting={
+success:function(response){
+
+var arr=BaseRecord.diagnoses;
+
+var arr2 = BaseRecord.icd_group;
+
+var data_json=(arr.filter(arr => arr.gr2 === BaseRecord.classgr));
+  var str_json="";
+       for(var i in data_json) {
+       str_json+="<p id='"+data_json[i]['gr1']+"' value='"+data_json[i]['id']+"'>"+"<input type='radio' class='namdia1' name='namdia1' value='"+data_json[i]['namedia']+"'>"+data_json[i]['namedia']+data_json[i]['code']+" "+"</p>";     
+         }
+
+
+var data_json2=(arr2.filter(arr2 => arr2.gr2 === BaseRecord.classgr));
+    var str_json2="";
+     for(var i in data_json2) {
+       if(data_json2[i]['gr3'] !=''){
+       str_json2+="<p id='"+data_json2[i]['gr3']+"' class='gr3' data='"+data_json2[i]['id']+"'>"+data_json2[i]['name_diagnoses']+"</p>"+"<div class='all_group4"+data_json2[i]['id']+" classgr4'></div>";;     
+         }
+    }
+
+ $('.name_diagnoses').html(str_json);
+
+var classgrtId = BaseRecord.id;
+$('.all_group2'+ classgrtId).html(str_json2);
+},
+  error: (error) => {
+    console.log(JSON.stringify(error));
+   },
+   };
+   $.ajax(ajaxSetting); 
+},
+
+getmkbgr3: function(){
+
+var ajaxSetting={
+success:function(response){
+
+var arr=BaseRecord.diagnoses;
+
+var arr2 = BaseRecord.icd_group;
+
+var data_json=(arr.filter(arr => arr.gr3 === BaseRecord.classgr));
+  var str_json="";
+       for(var i in data_json) {
+       str_json+="<p id='"+data_json[i]['gr1']+"' value='"+data_json[i]['id']+"'>"+"<input type='radio' class='namdia2' name='namdia2' value='"+data_json[i]['namedia']+"'>"+data_json[i]['namedia']+data_json[i]['code']+" "+"</p>";     
+         }
+
+
+var data_json2=(arr2.filter(arr2 => arr2.gr3 === BaseRecord.classgr));
+    var str_json2="";
+     for(var i in data_json2) {
+       if(data_json2[i]['gr3'] !=''){
+       str_json2+="<p id='"+data_json2[i]['gr3']+"' class='gr3' data='"+data_json2[i]['id']+"'>"+data_json2[i]['name_diagnoses']+"</p>";     
+         }
+    }
+
+ $('.name_diagnoses').html(str_json);
+
+var classgrtId = BaseRecord.id;
+
+$('.all_group4'+ classgrtId).html(str_json2);
+},
+  error: (error) => {
+    console.log(JSON.stringify(error));
+   },
+   };
+   $.ajax(ajaxSetting); 
+},
+
+};
+
+</script>   
+
+@endsection

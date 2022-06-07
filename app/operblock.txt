@@ -1,0 +1,275 @@
+        foreach ($period as $key => $date) {
+            foreach ($operblockoper as $key22 => $val) {
+
+                if ($val->d_operplan == $date->format('Y-m-d')  )  {
+                        for ($i=1; $i<=$val->ref; $i++){
+                            $rts[$val->idoperblock][$date->format('Y-m-d')][] = $val->ref . '#' . $val->pac_fio;
+                        }
+
+
+                }else {
+                    $rts[$val->idoperblock][$date->format('Y-m-d')][] = NULL;
+                }
+
+            }
+        }
+
+
+
+        foreach ($period as $key => $date) {
+            foreach ($operblockoper as $key22 => $val) {
+
+                if ($val->d_operplan == $date->format('Y-m-d')  )  {
+                           $rts[$date->format('Y-m-d')][$val->idoperblock][] = $val->ref . '#' . $val->pac_fio;
+
+
+
+                }else {
+                     $rts[$date->format('Y-m-d')][$val->idoperblock][] = NULL;
+
+                }
+
+            }
+        }
+
+<table class="table table-bordered table-xs operdata">
+    <tr>
+
+        @foreach($rts as $key => $value)
+            <td>Oper {{$key}}</td>
+
+            @foreach($value as $key1 => $valr)
+                <td>@if ($loop->first) <i class="bi bi-arrow-left-square data-left" style="font-size: 15px"></i>
+                    @elseif ($loop->last) <i class="bi bi-arrow-right-square data-right" style="font-size: 15px"></i> @endif{{$key1}} <input type="radio" name="operdata" value="{{Carbon\Carbon::parse($key)->format('Y-m-d')}}"></td>
+            @endforeach
+    </tr>
+
+    @foreach($opersb as $k => $v)
+        <tr>
+            <td>{{$v->worktime_start}}</td>
+            @foreach($value as $key2 => $value2)
+
+                @php $le = '';  if(!empty($value2[$k])) $le = $value2[$k];   @endphp
+                @if(!empty($value2[$k]))
+                    @php $pieces = explode("#", $le);  @endphp
+                    <td >{{$pieces[1]}} </div> </td>
+                         @else
+                    <td></td>
+                @endif
+
+            @endforeach
+        </tr>
+    @endforeach
+
+    @endforeach
+
+
+</table>
+
+
+
+<table class="table table-bordered table-xs operdata">
+    <tr>
+     @foreach($rts as $key => $value)
+
+           <td>
+               <table class="table table-bordered">
+
+                <tr>
+                    <td>Oper {{$key}}</td>
+                    @foreach($value as $key1 => $valr)
+                        <td>@if ($loop->first) <i class="bi bi-arrow-left-square data-left" style="font-size: 15px"></i>
+                            @elseif ($loop->last) <i class="bi bi-arrow-right-square data-right" style="font-size: 15px"></i> @endif{{$key1}} <input type="radio" name="operdata" value="{{Carbon\Carbon::parse($key)->format('Y-m-d')}}"></td>
+                   @endforeach
+
+                   @foreach($opersb as $k => $v)
+
+                       <tr>
+                           <td>{{$v->worktime_start}}</td>
+
+                           @foreach($value as $key2 => $value2)
+
+                               @if(isset($value2[$k]))
+                                   @php if(!empty($value2[$k])) $pieces = explode("#", $value2[$k]);   @endphp
+                                   @php $doubl = ''; @endphp
+                                   <td rowspan="{{$pieces[0]}}">{{$pieces[1]}}  - {{$doubl}} </td>
+
+
+                                  <?php  $doubl = $pieces[1]; ?>
+                               @else
+                                   <td rowspan="1"></td>
+
+                               @endif
+
+                           @endforeach
+                       </tr>
+                       @endforeach
+
+
+
+                </tr>
+               </table>
+           </td>
+        @endforeach
+    </tr>
+</table>
+
+<div class="row">
+
+<div class="col-auto">
+<table class=" operdata" style=" border=0; cellpadding=0; cellspacing=70;">
+    <tr>
+
+        @foreach($rts as $key => $value)
+            <td style="width: 20px;">Oper {{$key}}</td>
+
+            @foreach($value as $key1 => $valr)
+                <td style="width: 150px;">@if ($loop->first) <i class="bi bi-arrow-left-square data-left" style="font-size: 15px"></i>
+                    @elseif ($loop->last) <i class="bi bi-arrow-right-square data-right" style="font-size: 15px"></i> @endif{{$key1}} <input type="radio" name="operdata" value="{{Carbon\Carbon::parse($key)->format('Y-m-d')}}"></td>
+            @endforeach
+    </tr>
+
+    @foreach($opersb as $k => $v)
+        <tr>
+            <td>{{$v->worktime_start}}</td>
+            @foreach($value as $key2 => $value2)
+
+                @php   $doubl = 'd';  $pieces=''; @endphp
+                @if(!empty($value2[$k]))
+
+                    @php $pieces = explode("#", $value2[$k]); $w=27*($pieces[0]); @endphp
+                       @for($i=1; $i<=$pieces[0]; $i++)
+
+                    <td >  <div style="height:{{$w}}px;position: absolute;background-color:#{{$pieces[2]}};padding-top: 4px; padding-bottom: 2px;">{{$pieces[1]}} - {{$w}} - #{{$pieces[2]}}</div></td>
+                    @endfor
+                    @php $doubl = $pieces[0];  @endphp
+
+                @else
+                    <td></td>
+                @endif
+
+            @endforeach
+        </tr>
+    @endforeach
+
+    @endforeach
+
+
+</table>
+</div>
+</div>
+
+
+Старій вариант
+
+<table  class="table table-bordered mt-2 operdata" style="width:100%">
+   <tr>
+  @foreach($rts as $key1 => $value1)
+
+  <td style="text-align: center;font-size:10px"><input type="hidden" class="operblockname" name="operblockname" value="{{$key1}}"><mark> Оперблок -  {{$key1}} </mark></td>
+
+    @foreach ($m3 as $key=> $ms)
+   <th style="text-align: center;font-size:10px; width: 100px; " class="data" data="{!!$key!!}"> @if ($loop->first) <i class="bi bi-arrow-left-square data-left" style="font-size: 15px"></i>
+   @elseif ($loop->last) <i class="bi bi-arrow-right-square data-right" style="font-size: 15px"></i> @endif {!!$key!!} <input type="radio" name="operdata" value="{{Carbon\Carbon::parse($key)->format('Y-m-d')}}"> <br>{!!$ms!!} </th>
+   @endforeach
+ </tr>
+ <td style="width: 20px"></td>
+
+  @for($date = strtotime($da); $date <= strtotime($da1); $date = strtotime("+1 day", $date))
+
+  <td class="id_palattd" style="font-size:12px; width: 100px;" >@foreach($value1[date("Y-m-d",$date)] as $k1 =>$v1)
+ {!!$v1!!}
+   @endforeach
+      </td>
+@endfor
+    </tr>
+    @endforeach
+
+
+</table>
+
+Таблица с цветным дивом
+
+<table>
+    @foreach($opersb as $k => $v)
+        <tr>
+            <td @if($k == 3) rowspan="2" @endif>{{$v->worktime_start}}</td>
+        <tr></tr>
+        </tr>
+    @endforeach
+</table>
+<table class=" operdata" style=" border=0; cellpadding=0; cellspacing=70;">
+    <tr>
+
+        @foreach($rts as $key => $value)
+            <td style="width: 20px;">Oper {{$key}}</td>
+
+            @foreach($value as $key1 => $valr)
+                <td style="width: 150px;">@if ($loop->first) <i class="bi bi-arrow-left-square data-left" style="font-size: 15px"></i>
+                    @elseif ($loop->last) <i class="bi bi-arrow-right-square data-right" style="font-size: 15px"></i> @endif{{$key1}} <input type="radio" name="operdata" value="{{Carbon\Carbon::parse($key)->format('Y-m-d')}}"></td>
+            @endforeach
+    </tr>
+
+    @foreach($opersb as $k => $v)
+        <tr>
+            <td>{{$v->worktime_start}}</td>
+            @foreach($value as $key2 => $value2)
+
+                @php   $doubl = 'd';  $pieces=''; @endphp
+                @if(!empty($value2[$k]))
+
+                    @php $pieces = explode("#", $value2[$k]); $w=27*($pieces[0]); @endphp
+
+
+                    <td style="height: 10px !important;" >  <div style="height:{{$w}}px;clear: both;background-color:#{{$pieces[2]}};margin-top:0px !important;padding-bottom: 2px;">{{$pieces[1]}} - {{$w}} - #{{$pieces[2]}}</div></td>
+                      <tr></tr>
+                    @php $doubl = $pieces[0];  @endphp
+
+                @else
+                    <td></td>
+                @endif
+
+            @endforeach
+        </tr>
+    @endforeach
+
+    @endforeach
+</table>
+
+
+
+
+
+<table class=" operdata" style=" border=0; cellpadding=0; cellspacing=70;">
+    <tr>
+        @foreach($rts as $key => $value)
+            <td style="width: 20px;">Oper {{$key}}</td>
+    </tr>
+    <tr>
+            <td>
+                <table>
+                    <tr>
+            @foreach($value as $key1 => $valr)
+
+                <td style="width: 150px;">@if ($loop->first) <i class="bi bi-arrow-left-square data-left" style="font-size: 15px"></i>
+                    @elseif ($loop->last) <i class="bi bi-arrow-right-square data-right" style="font-size: 15px"></i> @endif{{$key1}} <input type="radio" name="operdata" value="{{Carbon\Carbon::parse($key)->format('Y-m-d')}}"></td>
+                    </tr>
+
+                    @for ($i=0; $i<=24; $i++)
+                        <tr>
+                            <td @if($i==3) rowspan="2" @endif>{{$i}}</td>
+
+                        </tr>
+                    @endfor
+            @endforeach
+    </tr>
+
+
+                </table>
+            </td>
+    </tr>
+
+    </table>
+</td>
+    @endforeach
+</table>

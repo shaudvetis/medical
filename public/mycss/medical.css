@@ -1,0 +1,22 @@
+.ex-button-0 {
+  
+    transition: all ease 0.5s;
+    cursor: pointer;
+    padding: 06.5px 10px;
+    border: none;
+    border-radius: 10px;
+
+    background-image: linear-gradient(to left, pink, BlueViolet, Cyan, CornflowerBlue);
+    background-size:300%;
+    background-position: 0 0;
+    -webkit-appearance: none !important;
+    color: white;
+    text-decoration:none;
+    font-weight:600;
+    
+    
+}
+.ex-button-0:hover {
+  background-position: 100% 0;
+  color:#fff;
+}
